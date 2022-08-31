@@ -1,0 +1,26 @@
+.user{
+    padding: 8px 6px;
+    border-radius: 6px;
+    transition: all 0.25s ease;
+    position: relative;
+    cursor: pointer;
+    &:hover{
+        background-color: #eee;
+    }
+    &-info{}
+
+    .unread{
+        position: absolute;
+        display: block;
+        background-color: #0084ff;
+        color: white;
+        padding: 2px 4px;
+        border-radius: 10px;
+        top: 0;
+        right: 0;
+    }
+}
+
+.selected_user{
+    background-color: #eee;
+}

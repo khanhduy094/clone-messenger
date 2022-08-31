@@ -1,0 +1,13 @@
+.form-chat{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 2px 2px 0;
+  border: 1px solid rgb(230, 230, 230);
+  border-radius: 2px;
+
+  .ant-form-item {
+    flex: 1;
+    margin-bottom: 0;
+  }
+}
