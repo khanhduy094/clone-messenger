@@ -73,28 +73,9 @@ function Login() {
       }
     });
 
-    //     createdAt: "1661863910856"
-    // creationTime: "Tue, 30 Aug 2022 12:51:50 GMT"
-    // lastLoginAt: "1661864570789"
-    // lastSignInTime: "Tue, 30 Aug 2022 13:02:50 GMT"
-
-    //     createdAt: "1661865464813"
-    // creationTime: "Tue, 30 Aug 2022 13:17:44 GMT"
-    // lastLoginAt: "1661865464814"
-    // lastSignInTime: "Tue, 30 Aug 2022 13:17:44 GMT"
-
-    // createdAt: "1661865464813"
-    // creationTime: "Tue, 30 Aug 2022 13:17:44 GMT"
-    // lastLoginAt: "1661865464814"
-    // lastSignInTime: "Tue, 30 Aug 2022 13:17:44 GMT"
   };
 
-  //   auth.onAuthStateChanged((user) => {
-  //     console.log({user});
-  //     if(user){
-  //         navigate("/")
-  //     }
-  // })
+
   return (
     <div className="login-container">
       <div className="login">
@@ -115,14 +96,7 @@ function Login() {
         >
           Đăng nhập với Google
         </Button>
-        {/* <div className="login-facebook">
-          <FacebookOutlined style={{ fontSize: "24px" }} />
-          <span className="login-text">Đăng nhập với Facebook</span>
-        </div>
-        <div className="login-facebook login-facebook" onClick={() =>handleLogin(googleProvider)}>
-          <FacebookOutlined style={{ fontSize: "24px" }} />
-          <span className="login-text">Đăng nhập với Google</span>
-        </div> */}
+
       </div>
     </div>
   );

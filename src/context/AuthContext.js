@@ -1,3 +1,4 @@
+import { Spin } from "antd";
 import { onAuthStateChanged } from "firebase/auth";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -11,18 +12,24 @@ const AuthProvider = ({ children }) => {
   const [createdAtUser, setCreatedAtUser] = useState(
     JSON.parse(localStorage.getItem("isNewUser")) || []
   );
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+    console.log("1");
 
+
+  console.log(user);
   useEffect(() => {
-    //lưu thông tin currentUser
-    const unsubscibed = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // let { displayName, email, uid, photoURL } = user;
-        setUser(user);
+      // lưu thông tin currentUser
+    const unsubscibed = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+        setLoading(false);
+        // setLoading(false)
         navigate("/");
         return;
       }
+      setUser({});
+      setLoading(false);
       navigate("/login");
     });
 
@@ -30,14 +37,15 @@ const AuthProvider = ({ children }) => {
       unsubscibed();
     };
   }, [navigate]);
-  useEffect(() => {
 
-  }, [])
   const value = { user, createdAtUser, setCreatedAtUser };
   // console.log(user);
+  // if (loading) {
+  //   return <div>Loading...</div>;
+  // }
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+   {loading ? <Spin style={{ position: 'fixed', inset: 0 }} /> : children}
     </AuthContext.Provider>
   );
 };

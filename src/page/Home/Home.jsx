@@ -13,7 +13,7 @@ import {
   serverTimestamp,
   setDoc,
   updateDoc,
-  where
+  where,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useState } from "react";
@@ -35,8 +35,11 @@ const Home = () => {
   const [showFile, setShowFile] = useState(false);
 
   const { user } = useAuth();
+  // console.log(user);
+  // console.log(auth.currentUser);
 
-  const currentUser = user?.uid;
+  console.log("2");
+  const currentLoginUser = auth?.currentUser?.uid;
   const handleLogout = async () => {
     await updateDoc(doc(db, "users", auth.currentUser.uid), {
       isOnline: false,
@@ -46,8 +49,9 @@ const Home = () => {
 
   useEffect(() => {
     // tạo query filter ra list user trừ currentUser
+
     const usersRef = collection(db, "users");
-    const q = query(usersRef, where("uid", "not-in", [currentUser]));
+    const q = query(usersRef, where("uid", "not-in", [currentLoginUser]));
 
     const unsub = onSnapshot(q, (querySnapshot) => {
       let users = [];
@@ -58,16 +62,16 @@ const Home = () => {
     });
 
     return () => unsub();
-  }, [currentUser, user]);
+  }, []);
 
   const handleSelectedUser = async (user) => {
     // console.log(user);
     setChat(user);
     let selectecUser = user.uid;
     const id =
-      currentUser > selectecUser
-        ? `${currentUser + selectecUser}`
-        : `${selectecUser + currentUser}`;
+    currentLoginUser > selectecUser
+        ? `${currentLoginUser + selectecUser}`
+        : `${selectecUser + currentLoginUser}`;
 
     const msgsRef = collection(db, "messages", id, "chat");
     const q = query(msgsRef, orderBy("createdAt", "asc"));
@@ -81,26 +85,23 @@ const Home = () => {
       setMsgs(msgs);
     });
 
-
     // lấy ra lastMessage giữa currentUser và selectedUser
     const docSnap = await getDoc(doc(db, "lastMsg", id));
-    
+
     // Set unread false khi user đã đọc new message
-    if (docSnap.data() && docSnap.data().from !== currentUser) {
-    
+    if (docSnap.data() && docSnap.data().from !== currentLoginUser) {
       await updateDoc(doc(db, "lastMsg", id), { unread: false });
     }
   };
   // console.log(msgs);
 
-
   const handleSubmit = async () => {
     // e.preventDefault();
     const selectUser = chat.uid;
     const id =
-      currentUser > selectUser
-        ? `${currentUser + selectUser}`
-        : `${selectUser + currentUser}`;
+    currentLoginUser > selectUser
+        ? `${currentLoginUser + selectUser}`
+        : `${selectUser + currentLoginUser}`;
     let url;
     if (img) {
       const imgRef = ref(
@@ -116,7 +117,7 @@ const Home = () => {
     await addDoc(collection(db, "messages", id, "chat"), {
       text,
       photoURL: user.photoURL,
-      from: currentUser,
+      from: currentLoginUser,
       to: selectUser,
       nameSend: user.displayName,
       createdAt: serverTimestamp(),
@@ -126,7 +127,7 @@ const Home = () => {
     // thêm tin nhắn chưa đọc
     await setDoc(doc(db, "lastMsg", id), {
       text,
-      from: currentUser,
+      from: currentLoginUser,
       to: selectUser,
       nameSend: user.displayName,
       createdAt: serverTimestamp(),
@@ -192,7 +193,7 @@ const Home = () => {
                   userInfo={userItem}
                   key={userItem.uid}
                   selectedUserFunc={handleSelectedUser}
-                  currentUserId={currentUser}
+                  currentUserId={currentLoginUser}
                   selectUser={chat}
                 />
               ))}
@@ -240,7 +241,7 @@ const Home = () => {
                         <Message
                           key={index}
                           mes={msg}
-                          currentUserChat={currentUser}
+                          currentUserChat={currentLoginUser}
                         />
                       ))
                     : null}
