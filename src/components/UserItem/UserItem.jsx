@@ -18,7 +18,7 @@ function UserItem({
 
   selectedUserFunc = () => {},
 }) {
-  const [data, setData] = useState({});
+  const [data, setData] = useState();
   const {selectedUser,setSelectedUser} = useApp();
 
 

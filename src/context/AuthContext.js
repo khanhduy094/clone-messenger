@@ -8,7 +8,9 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState({
+    name: "Khanh Duy"
+  });
   const [createdAtUser, setCreatedAtUser] = useState(
     JSON.parse(localStorage.getItem("isNewUser")) || []
   );
