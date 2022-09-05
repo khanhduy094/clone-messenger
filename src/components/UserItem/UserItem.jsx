@@ -19,38 +19,12 @@ function UserItem({
   selectedUserFunc = () => {},
 }) {
   const [data, setData] = useState({});
-  const {setSelectUser, openNoti, setOpenNoti} = useApp();
-  // const close = () => {
-  //   console.log(
-  //     "Notification was closed. Either the close button was clicked or duration time elapsed."
-  //   );
-  // };
+  const {selectedUser,setSelectedUser} = useApp();
 
-
-  // const openNotification = () => {
-  //   const key = `open${Date.now()}`;
-  //   const btn = (
-  //     <Button
-  //       type="primary"
-  //       size="small"
-  //       onClick={() => notification.close(key)}
-  //     >
-  //       Confirm
-  //     </Button>
-  //   );
-  //   notification.open({
-  //     message: `${openNoti?.from}`,
-  //     description:
-  //       `${openNoti.text}`,
-  //     btn,
-  //     key,
-  //     onClose: close,
-  //   });
-  // };
 
   const handleSelectedUser = (userInfo) => {
     selectedUserFunc(userInfo);
-    setSelectUser(userInfo);
+    setSelectedUser(userInfo);
     // setOpenNoti(false)
 
   }
@@ -64,7 +38,7 @@ function UserItem({
         ? `${currentUserId + selectUserId}`
         : `${selectUserId + currentUserId}`;
     let unsub = onSnapshot(doc(db, "lastMsg", id), (doc) => {
-      if(doc.data().from !== currentUserId && doc.data().unread === true){
+      if(doc.data()?.from !== currentUserId && doc.data()?.unread === true){
         console.log(doc.data());
      
        
@@ -85,7 +59,7 @@ function UserItem({
       }`}
       onClick={() => handleSelectedUser(userInfo)}
     >
-      {/* {openNoti && openNotification()} */}
+    
       <Col span={colLeft}>
         {userInfo ? (
           <Avatar src={userInfo.photoURL}>
@@ -102,7 +76,7 @@ function UserItem({
           {userInfo.displayName}
         </Typography.Title>
         {data?.from !== currentUserId && data?.unread && (
-          <span className="unread">New</span>
+          <span className="unread">Mới</span>
         )}
         {data && (
           <Typography.Text style={{ fontSize: "12px" }}>

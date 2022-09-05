@@ -13,19 +13,16 @@ import {
   serverTimestamp,
   setDoc,
   updateDoc,
-  where,
+  where
 } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useState } from "react";
-import Attachment from "../../components/Attachment/Attachment";
-import ChatContent from "../../components/ChatContent/ChatContent";
+import Message from "../../components/ChatMessage/Message";
 import InputChat from "../../components/InputChat/InputChat";
 import UserItem from "../../components/UserItem/UserItem";
 import { useAuth } from "../../context/AuthContext";
 import { auth, db, storage } from "../../firebase-app/config";
-import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
 import "./style.scss";
-import Message from "../../components/ChatMessage/Message";
-import Noti from "../../components/Noti/Noti";
 const { Header, Sider, Content } = Layout;
 
 const Home = () => {
@@ -35,11 +32,10 @@ const Home = () => {
   const [text, setText] = useState("");
   const [img, setImg] = useState("");
   const [msgs, setMsgs] = useState([]);
-  const [newMesNoti, setNewMesNoti] = useState({});
+  const [showFile, setShowFile] = useState(false);
+
   const { user } = useAuth();
-  // const { selectedUser } = useApp();
-  // const users = useFireStore("users");
-  // const currentUser = auth.currentUser?.uid;
+
   const currentUser = user?.uid;
   const handleLogout = async () => {
     await updateDoc(doc(db, "users", auth.currentUser.uid), {
@@ -49,10 +45,10 @@ const Home = () => {
   };
 
   useEffect(() => {
-
     // tạo query filter ra list user trừ currentUser
     const usersRef = collection(db, "users");
     const q = query(usersRef, where("uid", "not-in", [currentUser]));
+
     const unsub = onSnapshot(q, (querySnapshot) => {
       let users = [];
       querySnapshot.forEach((doc) => {
@@ -60,14 +56,9 @@ const Home = () => {
       });
       setUsers(users);
     });
+
     return () => unsub();
-  }, [currentUser]);
-
-
-  useEffect(() => {
-
-  }, [])
-
+  }, [currentUser, user]);
 
   const handleSelectedUser = async (user) => {
     // console.log(user);
@@ -91,16 +82,17 @@ const Home = () => {
     });
 
 
-      // get last message b/w logged in user and selected user
-      const docSnap = await getDoc(doc(db, "lastMsg", id));
-      // if last message exists and message is from selected user
-      if (docSnap.data() && docSnap.data().from !== currentUser) {
-        // update last message doc, set unread to false
-        await updateDoc(doc(db, "lastMsg", id), { unread: false });
-      }
+    // lấy ra lastMessage giữa currentUser và selectedUser
+    const docSnap = await getDoc(doc(db, "lastMsg", id));
+    
+    // Set unread false khi user đã đọc new message
+    if (docSnap.data() && docSnap.data().from !== currentUser) {
+    
+      await updateDoc(doc(db, "lastMsg", id), { unread: false });
+    }
   };
   // console.log(msgs);
-  console.log(newMesNoti);
+
 
   const handleSubmit = async () => {
     // e.preventDefault();
@@ -126,6 +118,7 @@ const Home = () => {
       photoURL: user.photoURL,
       from: currentUser,
       to: selectUser,
+      nameSend: user.displayName,
       createdAt: serverTimestamp(),
       media: url || "",
     });
@@ -135,131 +128,155 @@ const Home = () => {
       text,
       from: currentUser,
       to: selectUser,
+      nameSend: user.displayName,
       createdAt: serverTimestamp(),
       media: url || "",
       unread: true,
     });
-    console.log("nhap tn");
+    // console.log("nhap tn");
     setText("");
     setImg("");
+    setShowFile(false);
   };
   return (
-    <Layout>
-      <Sider
-        trigger={null}
-        collapsible
-        collapsed={collapsed}
-        className="chat-sider"
-        ant-layout-sider
-        width={"360px"}
-        theme="light"
-      >
-        <Row className="sidebar-info" justify="space-between" align="middle">
-          <Col span={6}>
-            <Avatar src={user.photoURL} />
-          </Col>
-          <Col span={12}>
-            <Typography.Text
-              strong
-              style={{ display: "block", textAlign: "center" }}
+    <>
+      {user ? (
+        <Layout>
+          <Sider
+            trigger={null}
+            collapsible
+            collapsed={collapsed}
+            className="chat-sider"
+            ant-layout-sider
+            width={"360px"}
+            theme="light"
+          >
+            <Row
+              className="sidebar-info"
+              justify="space-between"
+              align="middle"
             >
-              Chat
-            </Typography.Text>
-          </Col>
-          <Col span={6} style={{ textAlign: "end" }}>
-            <LoginOutlined
-              onClick={handleLogout}
-              style={{ fontSize: "20px" }}
-            />
-          </Col>
-        </Row>
-        {/* users */}
-
-        <div
-          className="user-list"
-          style={{
-            padding: "0 4px",
-            maxHeight: "calc(100vh - 80px)",
-            overflowY: "auto",
-          }}
-        >
-          {users.map((userItem) => (
-            <UserItem
-              iconSize={"large"}
-              text="asdsdds da sdadad sda"
-              colLeft={3}
-              colRight={20}
-              userInfo={userItem}
-              key={userItem.uid}
-              selectedUserFunc={handleSelectedUser}
-              currentUserId={currentUser}
-              selectUser={chat}
-              setNewMesNoti={setNewMesNoti}
-            />
-          ))}
-          {console.log("re-render")}
-        </div>
-      </Sider>
-      {chat ? (
-        <Layout className="site-layout">
-          <Header className="chat-header">
-            {/* {React.createElement(
-            collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
-            {
-              className: "trigger",
-              onClick: () => setCollapsed(!collapsed),
-            }
-          )} */}
-            {/* <Row justify="space-between" align="middle">
-            <Col span={3}>
-            <UserItem iconSize={"default"} text="hoạt động 2 giờ trước" colLeft={5} colRight={19}/>
-            </Col>
-            <Col span={2}>
-              ádasđ
-              <Button>áds</Button>
-            </Col>
-          </Row> */}
-
-            <Row>
-              <Col>
-                <Avatar src={chat.photoURL} />
+              <Col span={6}>
+                <Avatar src={user.photoURL} />
               </Col>
-              <Typography.Text strong style={{ marginLeft: "10px" }}>
-                {chat.displayName}
-              </Typography.Text>
+              <Col span={12}>
+                <Typography.Text
+                  strong
+                  style={{ display: "block", textAlign: "center" }}
+                >
+                  Chat
+                </Typography.Text>
+              </Col>
+              <Col span={6} style={{ textAlign: "end" }}>
+                <LoginOutlined
+                  onClick={handleLogout}
+                  style={{ fontSize: "20px" }}
+                />
+              </Col>
             </Row>
-          </Header>
-          <div className="chat-content">
+            {/* users */}
+
             <div
+              className="user-list"
               style={{
-                maxHeight: "100%",
+                padding: "0 4px",
+                maxHeight: "calc(100vh - 80px)",
                 overflowY: "auto",
               }}
-            > {msgs.length
-              ? msgs.map((msg, index) => (
-                  <Message key={index} mes={msg} currentUserChat={currentUser} />
-                  
-                ))
-              : null}
-
+            >
+              {users.map((userItem) => (
+                <UserItem
+                  iconSize={"large"}
+                  colLeft={3}
+                  colRight={20}
+                  userInfo={userItem}
+                  key={userItem.uid}
+                  selectedUserFunc={handleSelectedUser}
+                  currentUserId={currentUser}
+                  selectUser={chat}
+                />
+              ))}
             </div>
-            {/* <ChatContent msgs={msgs} /> */}
-            <InputChat
-              text={text}
-              setText={setText}
-              setImg={setImg}
-              handleSubmit={handleSubmit}
-            />
-          </div>
+          </Sider>
+          {chat ? (
+            <Layout className="site-layout">
+              <Header className="chat-header">
+                {/* {React.createElement(
+              collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
+              {
+                className: "trigger",
+                onClick: () => setCollapsed(!collapsed),
+              }
+            )} */}
+                {/* <Row justify="space-between" align="middle">
+              <Col span={3}>
+              <UserItem iconSize={"default"} text="hoạt động 2 giờ trước" colLeft={5} colRight={19}/>
+              </Col>
+              <Col span={2}>
+                ádasđ
+                <Button>áds</Button>
+              </Col>
+            </Row> */}
+
+                <Row>
+                  <Col>
+                    <Avatar src={chat.photoURL} />
+                  </Col>
+                  <Typography.Text strong style={{ marginLeft: "10px" }}>
+                    {chat.displayName}
+                  </Typography.Text>
+                </Row>
+              </Header>
+              <div className="chat-content">
+                <div
+                  style={{
+                    maxHeight: "100%",
+                    overflowY: "auto",
+                  }}
+                >
+                  {" "}
+                  {msgs.length
+                    ? msgs.map((msg, index) => (
+                        <Message
+                          key={index}
+                          mes={msg}
+                          currentUserChat={currentUser}
+                        />
+                      ))
+                    : null}
+                </div>
+                <InputChat
+                  text={text}
+                  img={img}
+                  setText={setText}
+                  setImg={setImg}
+                  handleSubmit={handleSubmit}
+                  showFile={showFile}
+                  setShowFile={setShowFile}
+                />
+              </div>
+            </Layout>
+          ) : (
+            <div
+              className="site-layout"
+              style={{ width: "100%", padding: "20px 0" }}
+            >
+              <div
+                style={{
+                  texAlign: "center",
+                  margin: "auto",
+                  maxWidth: "600px",
+                  fontSize: "30px",
+                  fontWeight: "bold",
+                }}
+              >
+                Hãy chọn bạn để bắt đầu trò chuyện !!!!
+              </div>
+            </div>
+          )}
         </Layout>
-      ) : (
-        <div className="site-layout" style={{width: "100%", padding: "20px 0"}}>
-          <div style={{texAlign:"center", margin: "auto", maxWidth: "600px", fontSize: "30px", fontWeight: "bold"}}>Hãy chọn bạn để bắt đầu trò chuyện !!!!</div>
-          
-        </div>
-      )}
-      <Noti newMesNoti={newMesNoti}/>
-    </Layout>
+      ) : null}
+    </>
   );
 };
 

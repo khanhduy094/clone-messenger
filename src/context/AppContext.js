@@ -1,76 +1,59 @@
-import { Button, notification } from "antd";
-import { collection, doc, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { createContext, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { auth, db } from "../firebase-app/config";
+import { toast } from "react-toastify";
+import { db } from "../firebase-app/config";
 import { useAuth } from "./AuthContext";
 
 const AppContext = createContext();
 export const useApp = () => useContext(AppContext);
 
 const AppProvider = ({ children }) => {
-  const [selectUser, setSelectUser] = useState("");
-  const [openNoti, setOpenNoti] = useState(false);
+  const [selectedUser, setSelectedUser] = useState("");
+
   const { user } = useAuth();
   const currentUserId = user.uid;
-  const selectUserId = selectUser.uid;
-
-  const close = () => {
-    console.log(
-      "Notification was closed. Either the close button was clicked or duration time elapsed."
-    );
-  };
-
-  const openNotification = () => {
-    const key = `open${Date.now()}`;
-    const btn = (
-      <Button
-        type="primary"
-        size="small"
-        onClick={() => notification.close(key)}
-      >
-        Confirm
-      </Button>
-    );
-    notification.open({
-      message: `${openNoti?.from}`,
-      description: `${openNoti.text}`,
-      btn,
-      key,
-      onClose: close,
-    });
-  };
 
   useEffect(() => {
-    let colRef = collection(db, "lastMsg");
+    const selectUserId = selectedUser?.uid;
+
     const id =
       currentUserId > selectUserId
         ? `${currentUserId + selectUserId}`
         : `${selectUserId + currentUserId}`;
-    let unsub = onSnapshot(colRef, (snapshot) => {
-      let arrMess = [];
-      snapshot.docs.forEach((doc) => {
-        if (doc.data().from !== currentUserId && doc.data().unread === true) {
-          arrMess.push(doc.data());
-        }
-        arrMess.forEach(mes => {
-          if (mes.to !== selectUserId){
-            openNotification()
+
+    const colRef = collection(db, "lastMsg");
+    // const q = query(colRef, where("uid", "not-in", [id]));
+
+    const unsub = onSnapshot(colRef, (querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        // idList.push(doc.id)
+        // let filterId = idList.includes(currentUserId)
+        let isCurrentUserid = currentUserId === doc.data().to;
+        console.log(isCurrentUserid);
+
+        if (
+          doc.id !== id &&
+          doc.data().from !== currentUserId &&
+          isCurrentUserid &&
+          doc.data().unread === true
+        ) {
+          if (doc.id) {
           }
-        })
-        console.log(arrMess);
+
+          let mess = doc.data().media
+            ? `Đã gửi 1 hình ảnh`
+            : `${doc.data().text}`;
+          toast.info(`${doc.data().nameSend}: ${mess}`, {
+            position: "top-right",
+            autoClose: 3000,
+          });
+        }
       });
-
-      // if(doc.data().from !== currentUserId && doc.data().unread === true){
-      //   // setOpenNoti(true)
-      //    openNotification()
-
-      // }
     });
     return () => unsub();
-  }, [currentUserId, selectUserId]);
+  }, [currentUserId, selectedUser]);
 
-  const value = { selectUser, setSelectUser, openNoti };
+  const value = { selectedUser, setSelectedUser };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

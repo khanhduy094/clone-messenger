@@ -7,6 +7,8 @@ import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
 import AuthProvider from "./context/AuthContext";
 import AppProvider from "./context/AppContext";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"
 
 ReactDOM.render(
   <React.StrictMode>
@@ -14,6 +16,7 @@ ReactDOM.render(
       <AuthProvider>
         <AppProvider>
           <App />
+          <ToastContainer />
         </AppProvider>
       </AuthProvider>
     </BrowserRouter>

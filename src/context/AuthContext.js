@@ -8,7 +8,9 @@ export const useAuth = () => useContext(AuthContext);
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState({});
-  const [createdAtUser, setCreatedAtUser] = useState(JSON.parse(localStorage.getItem("isNewUser")) || [],);
+  const [createdAtUser, setCreatedAtUser] = useState(
+    JSON.parse(localStorage.getItem("isNewUser")) || []
+  );
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -22,13 +24,17 @@ const AuthProvider = ({ children }) => {
         return;
       }
       navigate("/login");
-      return () => {
-        unsubscibed();
-      };
     });
+
+    return () => {
+      unsubscibed();
+    };
   }, [navigate]);
+  useEffect(() => {
+
+  }, [])
   const value = { user, createdAtUser, setCreatedAtUser };
-  console.log(user);
+  // console.log(user);
   return (
     <AuthContext.Provider value={value}>
       {!loading && children}
