@@ -26,38 +26,17 @@ const googleProvider = new GoogleAuthProvider();
 
 function Login() {
   const navigate = useNavigate();
-  const { createdAtUser, setCreatedAtUser } = useAuth();
+  const { createdAtUser} = useAuth();
   const handleLogin = async (provider) => {
-    // let {user, additionalUserInfo} = await auth.signInWithPopup(provider);
-    // if(additionalUserInfo?.isNewUser){
-    //   db.collection('users').add({
-    //     displayName: user.displayName,
-    //     email: user.email,
-    //     photoURL: user.photoURL,
-    //     uid: user.uid,
-    //     createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    //   })
-    // }
-    // check user sau khi dn thành công
-    let colRef = collection(db, "users");
+
+
 
     let { user } = await signInWithPopup(auth, provider);
     console.log(user.metadata.createdAt);
     console.log(createdAtUser);
 
-    // if (!createdAtUser.includes(user.metadata.createdAt)) {
-    //   setCreatedAtUser([...createdAtUser, user.metadata.createdAt]);
-    //   localStorage.setItem("isNewUser", JSON.stringify(createdAtUser));
 
-    //   addDoc(colRef, {
-    //     displayName: user.displayName,
-    //     email: user.email,
-    //     photoURL: user.photoURL,
-    //     uid: user.uid,
-    //     createdAt: serverTimestamp(),
-    //   });
-    // }
-
+    //lưu thông tin user vào collection
     setDoc(doc(db, "users", user.uid), {
       uid: user.uid,
       displayName: user.displayName,

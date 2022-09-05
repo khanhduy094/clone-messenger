@@ -11,7 +11,7 @@ const AppProvider = ({ children }) => {
   const [selectedUser, setSelectedUser] = useState("");
 
   const { user } = useAuth();
-  const currentUserId = user.uid;
+  const currentUserId = user?.uid;
 
   useEffect(() => {
     const selectUserId = selectedUser?.uid;

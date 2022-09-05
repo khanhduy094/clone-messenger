@@ -13,10 +13,11 @@ import {
   serverTimestamp,
   setDoc,
   updateDoc,
-  where,
+  where
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Message from "../../components/ChatMessage/Message";
 import InputChat from "../../components/InputChat/InputChat";
 import UserItem from "../../components/UserItem/UserItem";
@@ -38,18 +39,20 @@ const Home = () => {
   // console.log(user);
   // console.log(auth.currentUser);
 
-  console.log("2");
-  const currentLoginUser = auth?.currentUser?.uid;
+  const navigate = useNavigate();
+  const currentLoginUser = user?.uid;
   const handleLogout = async () => {
     await updateDoc(doc(db, "users", auth.currentUser.uid), {
       isOnline: false,
     });
     await signOut(auth);
   };
-
   useEffect(() => {
     // tạo query filter ra list user trừ currentUser
-
+    if(!user){
+      return
+    }
+    console.log("useEffect");
     const usersRef = collection(db, "users");
     const q = query(usersRef, where("uid", "not-in", [currentLoginUser]));
 

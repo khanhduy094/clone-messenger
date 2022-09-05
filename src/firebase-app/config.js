@@ -79,15 +79,25 @@ import { getStorage } from "firebase/storage";
 //   appId: "1:516759849378:web:9b1401aec5198638658afb"
 // };
 
-const firebaseConfig = { 
-  apiKey : "AIzaSyBsrQWLNk_Q4jBMdZ46ic-oUVFRdaiDjys" , 
-  authDomain : "chat-app-4d862.firebaseapp.com" , 
-  projectId : "chat-app-4d862" , 
-  storageBucket : "chat-app-4d862.appspot.com" , 
-  messagingSenderId : "891046053575" , 
-  appId : "1:891046053575:web:46d7d8178237524fe120e2" , 
-  measurementId : "G-2F83ED38TX" 
-};  
+// const firebaseConfig = { 
+//   apiKey : "AIzaSyBsrQWLNk_Q4jBMdZ46ic-oUVFRdaiDjys" , 
+//   authDomain : "chat-app-4d862.firebaseapp.com" , 
+//   projectId : "chat-app-4d862" , 
+//   storageBucket : "chat-app-4d862.appspot.com" , 
+//   messagingSenderId : "891046053575" , 
+//   appId : "1:891046053575:web:46d7d8178237524fe120e2" , 
+//   measurementId : "G-2F83ED38TX" 
+// };  
+
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBasXglrRhZsICm6gK9p49ek907em1sElc",
+  authDomain: "messenger-clone-80301.firebaseapp.com",
+  projectId: "messenger-clone-80301",
+  storageBucket: "messenger-clone-80301.appspot.com",
+  messagingSenderId: "504362840239",
+  appId: "1:504362840239:web:fa930db1d4f0083f38a45a"
+};
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

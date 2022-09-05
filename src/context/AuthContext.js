@@ -8,20 +8,16 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState({
-    name: "Khanh Duy"
-  });
+  const [user, setUser] = useState();
   const [createdAtUser, setCreatedAtUser] = useState(
     JSON.parse(localStorage.getItem("isNewUser")) || []
   );
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-    console.log("1");
-
 
   console.log(user);
   useEffect(() => {
-      // lưu thông tin currentUser
+    // lưu thông tin currentUser
     const unsubscibed = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
@@ -30,7 +26,7 @@ const AuthProvider = ({ children }) => {
         navigate("/");
         return;
       }
-      setUser({});
+      // setUser({});
       setLoading(false);
       navigate("/login");
     });
@@ -47,7 +43,7 @@ const AuthProvider = ({ children }) => {
   // }
   return (
     <AuthContext.Provider value={value}>
-   {loading ? <Spin style={{ position: 'fixed', inset: 0 }} /> : children}
+      {loading ? <Spin style={{ position: "fixed", inset: 0 }} /> : children}
     </AuthContext.Provider>
   );
 };
