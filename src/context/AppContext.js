@@ -12,15 +12,15 @@ const AppProvider = ({ children }) => {
 
   const { user } = useAuth();
   const currentUserId = user?.uid;
-
-  useEffect(() => {
-    const selectUserId = selectedUser?.uid;
+  const selectUserId = selectedUser?.uid;
 
     const id =
       currentUserId > selectUserId
         ? `${currentUserId + selectUserId}`
         : `${selectUserId + currentUserId}`;
 
+  useEffect(() => {
+  
     const colRef = collection(db, "lastMsg");
     // const q = query(colRef, where("uid", "not-in", [id]));
 
@@ -37,9 +37,7 @@ const AppProvider = ({ children }) => {
           isCurrentUserid &&
           doc.data().unread === true
         ) {
-          if (doc.id) {
-          }
-
+          
           let mess = doc.data().media
             ? `Đã gửi 1 hình ảnh`
             : `${doc.data().text}`;
@@ -47,11 +45,12 @@ const AppProvider = ({ children }) => {
             position: "top-right",
             autoClose: 3000,
           });
+          return
         }
       });
     });
     return () => unsub();
-  }, [currentUserId, selectedUser]);
+  }, [currentUserId]);
 
   const value = { selectedUser, setSelectedUser };
 

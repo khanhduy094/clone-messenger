@@ -1,11 +1,10 @@
-import { SettingOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Col, notification, Row, Typography } from "antd";
+import { UserOutlined } from "@ant-design/icons";
+import { Col, Row, Typography } from "antd";
 import Avatar from "antd/lib/avatar/avatar";
 import { doc, onSnapshot } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useApp } from "../../context/AppContext";
 import { db } from "../../firebase-app/config";
-import useFireStore from "../../hooks/useFireStore";
 import "./style.scss";
 
 function UserItem({
@@ -83,7 +82,6 @@ function UserItem({
             <span styles={{ fontWeight: "bold" }}>
               {data?.from === currentUserId ? "Tôi: " : null}
             </span>
-            {/* {currentUserId === userInfo.uid ? selectUserId === } */}
             {data.text}
           </Typography.Text>
         )}
