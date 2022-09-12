@@ -66,6 +66,8 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -104,5 +106,31 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
+const messaging = getMessaging(app);
+
+export const fetchToken = (setTokenFound) => {
+  return getToken(messaging, {vapidKey: 'BHGPr3pJQSflJAJtTIVXbmcEXlPV_HP29TZQRcqrGCN10gKIa-ojIJmtvM9kQGcsNKsWIA6ezKFG8Bd6LTjaVc0'}).then((currentToken) => {
+    if (currentToken) {
+      console.log('current token for client: ', currentToken);
+      setTokenFound(true);
+      // Track the token -> client mapping, by sending to backend server
+      // show on the UI that permission is secured
+    } else {
+      console.log('No registration token available. Request permission to generate one.');
+      setTokenFound(false);
+      // shows on the UI that permission is required 
+    }
+  }).catch((err) => {
+    console.log('An error occurred while retrieving token. ', err);
+    // catch error while creating client token
+  });
+}
+
+export const onMessageListener = () =>
+  new Promise((resolve) => {
+    onMessage(messaging, (payload) => {
+      resolve(payload);
+    });
+});
 
 export { db, auth, storage };

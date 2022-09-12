@@ -1,4 +1,8 @@
-import { LoginOutlined } from "@ant-design/icons";
+import {
+  LoginOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+} from "@ant-design/icons";
 import { Col, Layout, Row, Typography } from "antd";
 import Avatar from "antd/lib/avatar/avatar";
 import { signOut } from "firebase/auth";
@@ -13,7 +17,7 @@ import {
   serverTimestamp,
   setDoc,
   updateDoc,
-  where
+  where,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useState } from "react";
@@ -49,8 +53,8 @@ const Home = () => {
   };
   useEffect(() => {
     // tạo query filter ra list user trừ currentUser
-    if(!user){
-      return
+    if (!user) {
+      return;
     }
     console.log("useEffect");
     const usersRef = collection(db, "users");
@@ -72,7 +76,7 @@ const Home = () => {
     setChat(user);
     let selectecUser = user.uid;
     const id =
-    currentLoginUser > selectecUser
+      currentLoginUser > selectecUser
         ? `${currentLoginUser + selectecUser}`
         : `${selectecUser + currentLoginUser}`;
 
@@ -102,7 +106,7 @@ const Home = () => {
     // e.preventDefault();
     const selectUser = chat.uid;
     const id =
-    currentLoginUser > selectUser
+      currentLoginUser > selectUser
         ? `${currentLoginUser + selectUser}`
         : `${selectUser + currentLoginUser}`;
     let url;
@@ -152,7 +156,7 @@ const Home = () => {
             collapsed={collapsed}
             className="chat-sider"
             ant-layout-sider
-            width={"360px"}
+            width={"340px"}
             theme="light"
           >
             <Row
@@ -163,14 +167,17 @@ const Home = () => {
               <Col span={6}>
                 <Avatar src={user.photoURL} />
               </Col>
-              <Col span={12}>
-                <Typography.Text
-                  strong
-                  style={{ display: "block", textAlign: "center" }}
-                >
-                  Chat
-                </Typography.Text>
-              </Col>
+              {!collapsed && (
+                <Col span={12}>
+                  <Typography.Text
+                    strong
+                    style={{ display: "block", textAlign: "center" }}
+                  >
+                    Chat
+                  </Typography.Text>
+                </Col>
+              )}
+
               <Col span={6} style={{ textAlign: "end" }}>
                 <LoginOutlined
                   onClick={handleLogout}
@@ -198,20 +205,18 @@ const Home = () => {
                   selectedUserFunc={handleSelectedUser}
                   currentUserId={currentLoginUser}
                   selectUser={chat}
+                  collapsed={collapsed}
                 />
               ))}
+            </div>
+ 
+            <div className="trigger" style={{display: "flex", alignItems: "center", justifyContent: "center", marginTop: "20px"}} onClick={() => setCollapsed(!collapsed)}>
+              {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined /> }
             </div>
           </Sider>
           {chat ? (
             <Layout className="site-layout">
               <Header className="chat-header">
-                {/* {React.createElement(
-              collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
-              {
-                className: "trigger",
-                onClick: () => setCollapsed(!collapsed),
-              }
-            )} */}
                 {/* <Row justify="space-between" align="middle">
               <Col span={3}>
               <UserItem iconSize={"default"} text="hoạt động 2 giờ trước" colLeft={5} colRight={19}/>
